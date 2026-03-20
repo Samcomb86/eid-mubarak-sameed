@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eid Mubarak — from Sameed</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cinzel:wght@300;400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#D4A843;--gold2:#F0CC6A;--gold3:#A87820;
+  --teal:#1E8B87;--teal2:#5ECFCB;
+  --deep:#060810;--cream:#F7EDD5;--white:#FFFDF6;
+  --glow:0 0 20px rgba(212,168,67,.6),0 0 60px rgba(212,168,67,.25);
+}
+html,body{width:100%;min-height:100%;background:var(--deep);overflow-x:hidden}
+body{font-family:'Cormorant Garamond',serif;color:var(--cream);cursor:none}
+
+#cur{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--gold2);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen}
+#cur-ring{position:fixed;width:30px;height:30px;border-radius:50%;border:1px solid rgba(212,168,67,.4);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .1s,top .1s}
+
+#bg-c{position:fixed;inset:0;z-index:0}
+#geo-c{position:fixed;inset:0;z-index:1;opacity:.14;pointer-events:none}
+#fw-c{position:fixed;inset:0;z-index:3;pointer-events:none}
+#rope{position:fixed;top:0;left:0;width:100%;z-index:8;pointer-events:none}
+
+/* aurora blobs */
+.blob{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;animation:blob-drift 14s ease infinite alternate}
+@keyframes blob-drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,20px) scale(1.12)}}
+
+/* ── ENVELOPE SCREEN ── */
+#env-screen{
+  position:fixed;inset:0;z-index:200;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 38%,#0f1228 0%,#060810 70%);
+  transition:opacity .9s ease,visibility .9s;
+}
+#env-screen.gone{opacity:0;visibility:hidden;pointer-events:none}
+
+.env-outer{
+  position:relative;width:310px;height:195px;cursor:pointer;
+  filter:drop-shadow(0 0 50px rgba(212,168,67,.3));
+  transition:transform .35s ease,filter .35s;
+}
+.env-outer:hover{transform:scale(1.05) rotateY(4deg);filter:drop-shadow(0 0 80px rgba(212,168,67,.55))}
+.env-body{
+  position:absolute;inset:0;
+  background:linear-gradient(148deg,#171a30,#0d1020);
+  border:1px solid rgba(212,168,67,.28);border-radius:5px;overflow:hidden;
+}
+.env-body::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(212,168,67,.035) 20px,rgba(212,168,67,.035) 21px);
+}
+.env-vfold{
+  position:absolute;bottom:0;left:0;right:0;height:50%;
+  clip-path:polygon(0 100%,50% 0,100% 100%);
+  background:linear-gradient(180deg,#181b2e,#0d1020);
+  border-top:1px solid rgba(212,168,67,.18);
+}
+.env-flap{
+  position:absolute;top:0;left:0;right:0;height:52%;
+  clip-path:polygon(0 0,100% 0,50% 100%);
+  background:linear-gradient(158deg,#1e2140,#11142a);
+  border-bottom:1px solid rgba(212,168,67,.22);
+  transform-origin:top center;transition:transform .7s cubic-bezier(.4,0,.2,1);z-index:4;
+}
+.env-outer.open .env-flap{transform:rotateX(-180deg)}
+.env-seal{position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);width:54px;height:54px;z-index:5;transition:opacity .25s,transform .4s}
+.env-outer.open .env-seal{opacity:0;transform:translate(-50%,-50%) scale(.4)}
+
+.env-hint{margin-top:34px;font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:.45em;text-transform:uppercase;color:rgba(212,168,67,.6);animation:breathe 2.5s ease infinite}
+@keyframes breathe{0%,100%{opacity:.35;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+
+/* ── MAIN PAGE ── */
+#main{
+  position:relative;z-index:5;
+  min-height:100vh;display:none;
+  flex-direction:column;align-items:center;justify-content:center;
+  padding:100px 20px 60px;
+}
+
+/* ── CARD ── */
+.card{
+  width:min(700px,100%);position:relative;
+  background:linear-gradient(155deg,rgba(16,19,38,.97),rgba(7,9,18,.99));
+  border-radius:3px;overflow:hidden;
+  box-shadow:
+    0 0 0 1px rgba(212,168,67,.1),
+    0 0 0 7px rgba(212,168,67,.035),
+    0 50px 120px rgba(0,0,0,.75),
+    inset 0 1px 0 rgba(212,168,67,.2);
+  animation:rise 1.1s cubic-bezier(.16,1,.3,1) forwards;opacity:0;
+}
+@keyframes rise{from{opacity:0;transform:translateY(55px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+/* sheen sweep */
+.card::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,rgba(212,168,67,.05) 50%,transparent 65%);background-size:200% 100%;animation:sheen 5s ease infinite}
+@keyframes sheen{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* corners */
+.cn{position:absolute;width:46px;height:46px;border-color:rgba(212,168,67,.5);border-style:solid;pointer-events:none;z-index:4}
+.cn::after{content:'';position:absolute;width:5px;height:5px;background:var(--gold);border-radius:50%;opacity:.7}
+.cn.tl{top:10px;left:10px;border-width:1.5px 0 0 1.5px}.cn.tl::after{bottom:-2px;right:-2px}
+.cn.tr{top:10px;right:10px;border-width:1.5px 1.5px 0 0}.cn.tr::after{bottom:-2px;left:-2px}
+.cn.bl{bottom:10px;left:10px;border-width:0 0 1.5px 1.5px}.cn.bl::after{top:-2px;right:-2px}
+.cn.br{bottom:10px;right:10px;border-width:0 1.5px 1.5px 0}.cn.br::after{top:-2px;left:-2px}
+
+/* double border inset */
+.card-brd{position:absolute;inset:10px;border:1px solid rgba(212,168,67,.14);pointer-events:none;z-index:3}
+
+.card-in{position:relative;z-index:4;padding:clamp(44px,7vw,72px) clamp(30px,7vw,66px);display:flex;flex-direction:column;align-items:center}
+
+/* sparkle dots */
+.sp{position:absolute;background:var(--gold);border-radius:50%;animation:sp-pulse 3s infinite;z-index:5}
+@keyframes sp-pulse{0%,100%{opacity:0;transform:scale(0)}50%{opacity:.8;transform:scale(1)}}
+
+/* ── ELEMENTS ── */
+.top-orn{margin-bottom:26px;animation:fu .8s .1s ease both}
+.bismillah{font-family:'Amiri',serif;font-size:clamp(1rem,2.5vw,1.25rem);color:rgba(212,168,67,.5);letter-spacing:.08em;margin-bottom:18px;animation:fu .8s .2s ease both;text-align:center}
+.arabic{font-family:'Amiri',serif;font-size:clamp(2.8rem,7vw,4.6rem);font-weight:700;line-height:1.3;color:var(--gold2);text-align:center;text-shadow:var(--glow);animation:fu .8s .35s ease both}
+.div{display:flex;align-items:center;gap:14px;width:100%;margin:18px 0;animation:fu .8s .45s ease both}
+.dl{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(212,168,67,.4),transparent)}
+.dg{width:8px;height:8px;background:var(--gold);transform:rotate(45deg);flex-shrink:0;box-shadow:0 0 10px rgba(212,168,67,.7)}
+.eid-t{text-align:center;font-family:'Cinzel',serif;font-size:clamp(3.2rem,10vw,6.8rem);font-weight:300;letter-spacing:.1em;line-height:1;color:var(--white);text-shadow:0 0 80px rgba(212,168,67,.2);animation:fu .8s .4s ease both}
+.eid-s{display:block;font-family:'Cinzel',serif;font-size:clamp(1.5rem,4vw,2.5rem);font-weight:300;letter-spacing:.5em;color:var(--gold);text-shadow:var(--glow);margin-top:8px;text-transform:uppercase}
+.verse{font-family:'Amiri',serif;font-style:italic;font-size:clamp(1.1rem,2.5vw,1.35rem);color:rgba(247,237,213,.65);text-align:center;line-height:2;margin:6px 0 4px;animation:fu .8s .6s ease both;max-width:480px}
+.verse small{display:block;font-family:'Cormorant Garamond',serif;font-size:.9rem;color:rgba(247,237,213,.38);font-style:normal;margin-top:4px}
+.msg{font-size:clamp(.95rem,2vw,1.12rem);font-style:italic;color:rgba(247,237,213,.58);text-align:center;line-height:2.1;margin:22px 0;max-width:460px;animation:fu .8s .65s ease both}
+.from-w{display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:8px;animation:fu .8s .8s ease both}
+.from-lbl{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.45em;text-transform:uppercase;color:rgba(212,168,67,.45)}
+.from-nm{font-family:'Amiri',serif;font-size:clamp(2.2rem,5vw,3rem);font-weight:700;font-style:italic;color:var(--gold2);text-shadow:var(--glow);letter-spacing:.04em}
+.bot-orn{margin-top:26px;opacity:.3;animation:fu .8s .9s ease both}
+
+@keyframes fu{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* particles */
+.pt{position:fixed;pointer-events:none;z-index:50;border-radius:50%;animation:pt-fall linear forwards}
+@keyframes pt-fall{0%{opacity:1;transform:translateY(0) rotate(0) scale(1)}100%{opacity:0;transform:translateY(90px) rotate(400deg) scale(.3)}}
+.sr{position:fixed;pointer-events:none;z-index:49;border-radius:50%;border:1.5px solid rgba(212,168,67,.8);animation:sr-exp .6s ease forwards;transform:translate(-50%,-50%)}
+@keyframes sr-exp{0%{transform:translate(-50%,-50%) scale(0);opacity:1}100%{transform:translate(-50%,-50%) scale(3.5);opacity:0}}
+
+.fstar{position:fixed;pointer-events:none;z-index:2;opacity:0;font-size:12px;animation:fs-rise linear forwards}
+@keyframes fs-rise{0%{opacity:0;transform:translateY(0) rotate(0)}15%{opacity:.7}85%{opacity:.3}100%{opacity:0;transform:translateY(-100px) rotate(180deg)}}
+</style>
+</head>
+<body>
+
+<canvas id="bg-c"></canvas>
+<canvas id="geo-c"></canvas>
+<canvas id="fw-c"></canvas>
+
+<div class="blob" style="width:650px;height:420px;background:radial-gradient(circle,rgba(30,139,135,.55),transparent);top:-120px;left:-150px"></div>
+<div class="blob" style="width:550px;height:550px;background:radial-gradient(circle,rgba(212,168,67,.4),transparent);bottom:-160px;right:-120px;animation-delay:-7s"></div>
+<div class="blob" style="width:420px;height:320px;background:radial-gradient(circle,rgba(196,85,106,.35),transparent);top:35%;left:25%;animation-delay:-3.5s;opacity:.7"></div>
+
+<div id="cur"></div><div id="cur-ring"></div>
+<div id="rope"></div>
+
+<!-- ENVELOPE SCREEN -->
+<div id="env-screen">
+  <canvas id="env-bg" style="position:absolute;inset:0;z-index:0"></canvas>
+  <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:0">
+    <div style="font-family:'Amiri',serif;font-size:1.5rem;color:rgba(212,168,67,.5);letter-spacing:.08em;margin-bottom:10px;animation:breathe 3s ease infinite;text-align:center">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:rgba(247,237,213,.28);letter-spacing:.18em;margin-bottom:36px">a gift has arrived for you</div>
+
+    <div class="env-outer" id="env" onclick="openEnv()">
+      <div class="env-body"></div>
+      <div class="env-vfold"></div>
+      <div class="env-flap"></div>
+      <svg class="env-seal" viewBox="0 0 54 54">
+        <circle cx="27" cy="27" r="24" fill="none" stroke="var(--gold)" stroke-width="1.2"/>
+        <circle cx="27" cy="27" r="18" fill="rgba(212,168,67,.1)" stroke="var(--gold)" stroke-width=".7"/>
+        <!-- 8-pointed star -->
+        <path d="M27 11 L29.8 20.5 L39 17 L32 24 L40 31 L30 28.5 L27 38 L24 28.5 L14 31 L22 24 L15 17 L24.2 20.5 Z" fill="rgba(212,168,67,.45)" stroke="var(--gold)" stroke-width=".6"/>
+        <circle cx="27" cy="27" r="4.5" fill="rgba(212,168,67,.3)"/>
+      </svg>
+    </div>
+    <p class="env-hint">✦ &nbsp; tap to open &nbsp; ✦</p>
+  </div>
+</div>
+
+<!-- MAIN PAGE -->
+<div id="main">
+  <div class="card">
+    <div class="cn tl"></div><div class="cn tr"></div>
+    <div class="cn bl"></div><div class="cn br"></div>
+    <div class="card-brd"></div>
+    <!-- sparkle dots -->
+    <div class="sp" style="width:4px;height:4px;top:22px;left:90px;animation-delay:0s"></div>
+    <div class="sp" style="width:3px;height:3px;top:45px;right:110px;animation-delay:.9s"></div>
+    <div class="sp" style="width:4px;height:4px;bottom:70px;left:60px;animation-delay:1.7s"></div>
+    <div class="sp" style="width:3px;height:3px;bottom:40px;right:80px;animation-delay:.5s"></div>
+    <div class="sp" style="width:2px;height:2px;top:80px;left:200px;animation-delay:2.2s;background:var(--teal2)"></div>
+
+    <div class="card-in">
+
+      <!-- Top ornament -->
+      <div class="top-orn">
+        <svg viewBox="0 0 200 56" fill="none" width="200">
+          <!-- Center 8-star -->
+          <g transform="translate(100,28)">
+            <path d="M0-20 L4-8 L14-12 L8-2 L18 5 L7 5 L6 16 L0 7 L-6 16 L-7 5 L-18 5 L-8-2 L-14-12 L-4-8 Z" fill="rgba(212,168,67,.55)" stroke="var(--gold)" stroke-width=".6"/>
+            <circle r="6" fill="rgba(212,168,67,.25)" stroke="var(--gold)" stroke-width=".8"/>
+          </g>
+          <!-- Side -->
+          <g transform="translate(44,28)"><path d="M0-10 L5 0 L0 10 L-5 0Z" fill="none" stroke="rgba(212,168,67,.4)" stroke-width=".9"/><circle r="2.5" fill="rgba(212,168,67,.5)"/></g>
+          <g transform="translate(156,28)"><path d="M0-10 L5 0 L0 10 L-5 0Z" fill="none" stroke="rgba(212,168,67,.4)" stroke-width=".9"/><circle r="2.5" fill="rgba(212,168,67,.5)"/></g>
+          <line x1="54" y1="28" x2="78" y2="28" stroke="rgba(212,168,67,.28)" stroke-width=".8"/>
+          <line x1="122" y1="28" x2="146" y2="28" stroke="rgba(212,168,67,.28)" stroke-width=".8"/>
+          <circle cx="18" cy="28" r="1.5" fill="rgba(212,168,67,.3)"/>
+          <circle cx="182" cy="28" r="1.5" fill="rgba(212,168,67,.3)"/>
+          <circle cx="8" cy="28" r="1" fill="rgba(212,168,67,.18)"/>
+          <circle cx="192" cy="28" r="1" fill="rgba(212,168,67,.18)"/>
+        </svg>
+      </div>
+
+      <div class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+
+      <div class="arabic">عيد مبارك</div>
+
+      <div class="div"><div class="dl"></div><div class="dg"></div><div class="dg" style="background:var(--teal2);box-shadow:0 0 10px var(--teal2)"></div><div class="dg"></div><div class="dl"></div></div>
+
+      <div class="eid-t">Eid<span class="eid-s">Mubarak</span></div>
+
+      <div class="div" style="margin-top:22px"><div class="dl"></div>
+        <svg width="18" height="18" viewBox="0 0 20 20"><path d="M10 1L11.8 7H18L12.9 10.9L14.8 17L10 13.1L5.2 17L7.1 10.9L2 7H8.2Z" fill="rgba(212,168,67,.65)"/></svg>
+      <div class="dl"></div></div>
+
+      <p class="verse">
+        تَقَبَّلَ اللهُ مِنَّا وَمِنْكُمْ
+        <small>May Allah accept from us and from you</small>
+      </p>
+
+      <p class="msg">
+        May this blessed Eid bring you<br>
+        boundless joy, peace &amp; prosperity.<br>
+        Wishing you and your loved ones<br>
+        every happiness this occasion holds. 🌙
+      </p>
+
+      <div class="div"><div class="dl"></div>
+        <svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 1L11.8 7H18L12.9 10.9L14.8 17L10 13.1L5.2 17L7.1 10.9L2 7H8.2Z" fill="rgba(212,168,67,.55)"/></svg>
+      <div class="dl"></div></div>
+
+      <div class="from-w">
+        <span class="from-lbl">with love &amp; prayers, from</span>
+        <span class="from-nm">Sameed</span>
+      </div>
+
+      <!-- Bottom ornament -->
+      <div class="bot-orn">
+        <svg viewBox="0 0 260 22" width="260" fill="none">
+          <polyline points="0,11 13,3 26,11 39,3 52,11 65,3 78,11 91,3 104,11 117,3 130,11 143,3 156,11 169,3 182,11 195,3 208,11 221,3 234,11 247,3 260,11" stroke="rgba(212,168,67,.38)" stroke-width="1"/>
+          <polyline points="0,11 13,19 26,11 39,19 52,11 65,19 78,11 91,19 104,11 117,19 130,11 143,19 156,11 169,19 182,11 195,19 208,11 221,19 234,11 247,19 260,11" stroke="rgba(212,168,67,.38)" stroke-width="1"/>
+          <circle cx="65" cy="11" r="2" fill="rgba(212,168,67,.45)"/>
+          <circle cx="130" cy="11" r="3" fill="rgba(212,168,67,.6)"/>
+          <circle cx="195" cy="11" r="2" fill="rgba(212,168,67,.45)"/>
+        </svg>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// CURSOR
+const cur=document.getElementById('cur'),curR=document.getElementById('cur-ring');
+document.addEventListener('mousemove',e=>{
+  const x=e.clientX,y=e.clientY;
+  cur.style.left=x+'px';cur.style.top=y+'px';
+  curR.style.left=x+'px';curR.style.top=y+'px';
+});
+
+// BG + STARS
+const bgC=document.getElementById('bg-c'),bX=bgC.getContext('2d');
+function rBg(){bgC.width=innerWidth;bgC.height=innerHeight}
+rBg();window.addEventListener('resize',rBg);
+
+const STARS=Array.from({length:320},()=>({
+  x:Math.random(),y:Math.random(),
+  r:Math.random()*1.6+.15,
+  spd:Math.random()*.5+.06,ph:Math.random()*Math.PI*2,
+  col:Math.random()>.72?'#F0CC6A':Math.random()>.5?'#5ECFCB':'#fff',
+  cross:Math.random()>.9
+}));
+
+function drawBg(t){
+  const g=bX.createRadialGradient(innerWidth*.5,innerHeight*.38,0,innerWidth*.5,innerHeight*.5,innerHeight);
+  g.addColorStop(0,'#121730');g.addColorStop(.55,'#0a0d1c');g.addColorStop(1,'#060810');
+  bX.fillStyle=g;bX.fillRect(0,0,innerWidth,innerHeight);
+  const au=[{x:.18,y:.08,r:360,c:'rgba(30,139,135,'},{x:.82,y:.88,r:310,c:'rgba(212,168,67,'},{x:.5,y:.58,r:260,c:'rgba(196,85,106,'}];
+  au.forEach((a,i)=>{
+    const p=.055+.04*Math.sin(t*.35+i*2);
+    const gr=bX.createRadialGradient(a.x*innerWidth,a.y*innerHeight,0,a.x*innerWidth,a.y*innerHeight,a.r);
+    gr.addColorStop(0,a.c+p+')');gr.addColorStop(1,a.c+'0)');
+    bX.fillStyle=gr;bX.fillRect(0,0,innerWidth,innerHeight);
+  });
+  // stars
+  STARS.forEach(s=>{
+    const alpha=.2+.65*Math.sin(t*s.spd+s.ph);
+    bX.globalAlpha=alpha;
+    const sx=s.x*innerWidth,sy=s.y*innerHeight;
+    if(s.cross){
+      bX.strokeStyle=s.col;bX.lineWidth=.7;
+      bX.beginPath();bX.moveTo(sx-s.r*2,sy);bX.lineTo(sx+s.r*2,sy);bX.stroke();
+      bX.beginPath();bX.moveTo(sx,sy-s.r*2);bX.lineTo(sx,sy+s.r*2);bX.stroke();
+    } else {
+      bX.fillStyle=s.col;
+      bX.beginPath();bX.arc(sx,sy,s.r,0,Math.PI*2);bX.fill();
+    }
+  });
+  bX.globalAlpha=1;
+}
+
+// GEO CANVAS
+const gC=document.getElementById('geo-c'),gX=gC.getContext('2d');
+function rGeo(){gC.width=innerWidth;gC.height=innerHeight;drawGeo()}
+rGeo();window.addEventListener('resize',rGeo);
+function drawGeo(){
+  gX.clearRect(0,0,innerWidth,innerHeight);
+  const sz=88;gX.strokeStyle='rgba(212,168,67,1)';gX.lineWidth=.45;
+  for(let x=-sz;x<innerWidth+sz;x+=sz){
+    for(let y=-sz;y<innerHeight+sz;y+=sz){
+      gX.save();gX.translate(x+sz/2,y+sz/2);
+      gX.beginPath();
+      for(let i=0;i<8;i++){
+        const a=i*Math.PI/4,r1=sz*.37,r2=sz*.2;
+        const px=Math.cos(a)*r1,py=Math.sin(a)*r1;
+        const mx=Math.cos(a+Math.PI/8)*r2,my=Math.sin(a+Math.PI/8)*r2;
+        if(i===0)gX.moveTo(px,py);else gX.lineTo(px,py);
+        gX.lineTo(mx,my);
+      }
+      gX.closePath();gX.stroke();
+      gX.beginPath();gX.arc(0,0,sz*.1,0,Math.PI*2);gX.stroke();
+      gX.restore();
+      gX.beginPath();gX.moveTo(x,y);gX.lineTo(x+sz,y);gX.stroke();
+      gX.beginPath();gX.moveTo(x,y);gX.lineTo(x,y+sz);gX.stroke();
+    }
+  }
+}
+
+// FIREWORKS
+const fwC=document.getElementById('fw-c'),fX=fwC.getContext('2d');
+function rFw(){fwC.width=innerWidth;fwC.height=innerHeight}
+rFw();window.addEventListener('resize',rFw);
+let fwP=[],rockets=[];
+const FC=['#D4A843','#F0CC6A','#5ECFCB','#1E8B87','#FFFDF6','#FFD700','#FF8FAB','#C4E8FF','#A8E6CF'];
+
+function mkP(x,y,col){
+  const a=Math.random()*Math.PI*2,spd=Math.random()*7+2;
+  return{x,y,col,vx:Math.cos(a)*spd,vy:Math.sin(a)*spd,alpha:1,
+    decay:Math.random()*.018+.008,sz:Math.random()*3+1,
+    isStar:Math.random()>.65,rot:Math.random()*Math.PI*2,rs:(Math.random()-.5)*.2,trail:[]};
+}
+function mkR(x){
+  return{x,y:innerHeight+10,vy:-(Math.random()*9+13),
+    col:FC[Math.floor(Math.random()*FC.length)],
+    targetY:Math.random()*innerHeight*.35+60,trail:[]};
+}
+function explode(x,y,col){
+  const n=110+Math.floor(Math.random()*50);
+  for(let i=0;i<n;i++) fwP.push(mkP(x,y,col));
+  for(let i=0;i<24;i++){
+    const a=i/24*Math.PI*2,spd=9;
+    fwP.push({x,y,col:'rgba(255,255,255,.7)',vx:Math.cos(a)*spd,vy:Math.sin(a)*spd,
+      alpha:1,decay:.045,sz:1.5,isStar:false,rot:0,rs:0,trail:[]});
+  }
+}
+function launchFw(n=5){
+  for(let i=0;i<n;i++) setTimeout(()=>rockets.push(mkR(80+Math.random()*(innerWidth-160))),i*300);
+}
+function star5(ctx,x,y,r){
+  ctx.beginPath();
+  for(let i=0;i<5;i++){
+    const a=i*Math.PI*2/5-Math.PI/2,ia=a+Math.PI/5;
+    i===0?ctx.moveTo(x+Math.cos(a)*r,y+Math.sin(a)*r):ctx.lineTo(x+Math.cos(a)*r,y+Math.sin(a)*r);
+    ctx.lineTo(x+Math.cos(ia)*r*.42,y+Math.sin(ia)*r*.42);
+  }
+  ctx.closePath();ctx.fill();
+}
+function updateFw(){
+  fX.clearRect(0,0,fwC.width,fwC.height);
+  rockets=rockets.filter(r=>{
+    r.trail.push({x:r.x,y:r.y});if(r.trail.length>14)r.trail.shift();
+    r.y+=r.vy;
+    if(r.y<=r.targetY){explode(r.x,r.y,r.col);return false}
+    r.trail.forEach((pt,i)=>{fX.globalAlpha=(i/r.trail.length)*.65;fX.fillStyle=r.col;fX.beginPath();fX.arc(pt.x,pt.y,1.5,0,Math.PI*2);fX.fill()});
+    fX.globalAlpha=1;fX.fillStyle=r.col;fX.beginPath();fX.arc(r.x,r.y,3,0,Math.PI*2);fX.fill();
+    return true;
+  });
+  fwP=fwP.filter(p=>{
+    p.x+=p.vx;p.y+=p.vy;p.vy+=.1;p.vx*=.97;p.vy*=.97;p.alpha-=p.decay;p.rot+=p.rs;
+    if(p.alpha<=0)return false;
+    fX.globalAlpha=p.alpha*.85;fX.fillStyle=p.col;
+    fX.save();fX.translate(p.x,p.y);fX.rotate(p.rot);
+    if(p.isStar)star5(fX,0,0,p.sz*1.6);
+    else{fX.beginPath();fX.arc(0,0,p.sz,0,Math.PI*2);fX.fill()}
+    fX.restore();
+    return true;
+  });
+  fX.globalAlpha=1;
+}
+
+// LANTERNS
+function buildLanterns(){
+  const rope=document.getElementById('rope');
+  const W=innerWidth,count=Math.max(9,Math.floor(W/110));
+  const pairs=[['#D4A843','#F0CC6A'],['#1E8B87','#5ECFCB'],['#C4556A','#F08FA0'],['#7B5EA7','#C4A8F0'],['#A87820','#D4A843']];
+  let s=`<svg width="${W}" height="88" viewBox="0 0 ${W} 88" xmlns="http://www.w3.org/2000/svg">`;
+  s+=`<path d="M0 8 Q${W*.25} 24 ${W*.5} 16 Q${W*.75} 8 ${W} 18" stroke="rgba(212,168,67,.28)" stroke-width="1.2" fill="none"/>`;
+  for(let i=0;i<count;i++){
+    const tx=i/(count-1),cx=tx*W;
+    // catenary
+    const cy=8+16*4*tx*(1-tx)+8*Math.sin(Math.PI*tx*.5);
+    const [c1,c2]=pairs[i%pairs.length];
+    const dl=(i*.28).toFixed(2),dur=(3.2+i*.25).toFixed(1);
+    const swayDir=i%2===0?-7:7;
+    s+=`<g style="transform-origin:${cx}px ${cy}px;animation:ls${i%2} ${dur}s ease-in-out ${dl}s infinite">
+      <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy+8}" stroke="${c1}" stroke-width="1" opacity=".55"/>
+      <ellipse cx="${cx}" cy="${cy+10}" rx="9" ry="3.5" fill="${c1}" opacity=".9"/>
+      <path d="M${cx-9} ${cy+10} Q${cx-11} ${cy+20} ${cx-10} ${cy+32} Q${cx-7} ${cy+40} ${cx} ${cy+42} Q${cx+7} ${cy+40} ${cx+10} ${cy+32} Q${cx+11} ${cy+20} ${cx+9} ${cy+10}Z" fill="${c1}" opacity=".88"/>
+      <path d="M${cx-5.5} ${cy+13} Q${cx-7} ${cy+22} ${cx-5} ${cy+30} Q${cx-2} ${cy+36} ${cx} ${cy+37} Q${cx+2} ${cy+36} ${cx+5} ${cy+30} Q${cx+7} ${cy+22} ${cx+5.5} ${cy+13}Z" fill="${c2}" opacity=".28"/>
+      <ellipse cx="${cx}" cy="${cy+25}" rx="4.5" ry="6" fill="${c2}" opacity=".45"/>
+      <ellipse cx="${cx}" cy="${cy+42}" rx="9" ry="3.5" fill="${c1}" opacity=".72"/>
+      <line x1="${cx-3}" y1="${cy+45}" x2="${cx-4}" y2="${cy+56}" stroke="${c1}" stroke-width=".8" opacity=".55"/>
+      <line x1="${cx}" y1="${cy+45}" x2="${cx}" y2="${cy+58}" stroke="${c1}" stroke-width=".8" opacity=".55"/>
+      <line x1="${cx+3}" y1="${cy+45}" x2="${cx+4}" y2="${cy+56}" stroke="${c1}" stroke-width=".7" opacity=".45"/>
+      <path d="M${cx-9} ${cy+10} Q${cx-11} ${cy+25} ${cx-10} ${cy+40}" stroke="${c2}" stroke-width=".6" fill="none" opacity=".3"/>
+      <path d="M${cx+9} ${cy+10} Q${cx+11} ${cy+25} ${cx+10} ${cy+40}" stroke="${c2}" stroke-width=".6" fill="none" opacity=".3"/>
+      <!-- glow -->
+      <ellipse cx="${cx}" cy="${cy+25}" rx="12" ry="14" fill="${c2}" opacity=".06"/>
+    </g>`;
+  }
+  s+=`</svg>`;
+  rope.innerHTML=s;
+  // inject keyframes
+  const st=document.createElement('style');
+  st.textContent=`@keyframes ls0{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}@keyframes ls1{0%,100%{transform:rotate(7deg)}50%{transform:rotate(-7deg)}}`;
+  document.head.appendChild(st);
+}
+
+// ENVELOPE BACKGROUND STARS
+const envBg=document.getElementById('env-bg');
+const eX=envBg.getContext('2d');
+function rEnv(){envBg.width=innerWidth;envBg.height=innerHeight}
+rEnv();
+const ESTARS=Array.from({length:200},()=>({x:Math.random(),y:Math.random(),r:Math.random()*1.4+.2,spd:Math.random()*.4+.05,ph:Math.random()*Math.PI*2,col:Math.random()>.7?'#F0CC6A':'#fff'}));
+function drawEnvBg(t){
+  eX.clearRect(0,0,envBg.width,envBg.height);
+  ESTARS.forEach(s=>{
+    eX.globalAlpha=.15+.6*Math.sin(t*s.spd+s.ph);
+    eX.fillStyle=s.col;
+    eX.beginPath();eX.arc(s.x*innerWidth,s.y*innerHeight,s.r,0,Math.PI*2);eX.fill();
+  });
+  eX.globalAlpha=1;
+}
+
+// OPEN ENVELOPE
+function openEnv(){
+  document.getElementById('env').classList.add('open');
+  setTimeout(()=>{
+    document.getElementById('env-screen').classList.add('gone');
+    const m=document.getElementById('main');m.style.display='flex';
+    buildLanterns();
+    setTimeout(()=>launchFw(8),700);
+    setTimeout(()=>launchFw(6),2600);
+    startFloatingStars();
+  },900);
+}
+
+// FLOATING STARS
+function startFloatingStars(){
+  setInterval(()=>{
+    const s=document.createElement('div');
+    s.className='fstar';
+    const icons=['✦','✧','✵','꩜','⁕'];
+    s.textContent=icons[Math.floor(Math.random()*icons.length)];
+    s.style.cssText=`left:${Math.random()*98}vw;bottom:0;font-size:${7+Math.random()*11}px;animation-duration:${5+Math.random()*7}s;color:${Math.random()>.5?'var(--gold2)':'var(--teal2)'}`;
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),14000);
+  },700);
+}
+
+// CLICK = CELEBRATE
+document.addEventListener('click',e=>{
+  // ring
+  const ring=document.createElement('div');
+  ring.className='sr';
+  ring.style.cssText=`left:${e.clientX}px;top:${e.clientY}px;width:36px;height:36px`;
+  document.body.appendChild(ring);
+  setTimeout(()=>ring.remove(),700);
+  // particles
+  const ptC=['#D4A843','#F0CC6A','#5ECFCB','#FFD700','#FF8FAB','#ffffff','#A8E6CF'];
+  for(let i=0;i<14;i++){
+    const p=document.createElement('div');p.className='pt';
+    const sz=4+Math.random()*8;
+    p.style.cssText=`left:${e.clientX+(Math.random()-.5)*60}px;top:${e.clientY+(Math.random()-.5)*30}px;width:${sz}px;height:${sz}px;background:${ptC[Math.floor(Math.random()*ptC.length)]};animation-duration:${1.1+Math.random()*.9}s;animation-delay:${Math.random()*.15}s`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),2500);
+  }
+  launchFw(4);
+});
+
+// MAIN LOOP
+let t=0;
+const envScreen=document.getElementById('env-screen');
+function loop(){
+  t+=.007;
+  drawBg(t);
+  if(!envScreen.classList.contains('gone')) drawEnvBg(t);
+  updateFw();
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>
